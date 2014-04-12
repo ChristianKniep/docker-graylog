@@ -43,14 +43,20 @@ RUN yum install -y perl-Digest-SHA
 RUN tar xf graylog2-server-0.20.2-snapshot.2.tgz
 RUN ln -sf graylog2-server-0.20.2-snapshot /opt/graylog2-server
 RUN cp /opt/graylog2-server/graylog2.conf.example /etc/graylog2.conf
-RUN sed -i -e "s/password_secret =/password_secret = $(pwgen -s 96)/" /etc/graylog2.conf
+RUN sed -i -e "s/password_secret =$/password_secret = $(pwgen -s 96)/" /etc/graylog2.conf
+RUN sed -i -e "s/root_password_sha2 =$/root_password_sha2 = $(echo -n admin | shasum -a 256|awk '{print $1}')/" /etc/graylog2.conf
 ADD etc/supervisord.d/graylog2-server.ini /etc/supervisord.d/graylog2-server.ini
 
 # web-interface
 RUN tar xf graylog2-web-interface-0.20.2-snapshot.tgz
 RUN ln -s graylog2-web-interface-0.20.2-snapshot graylog2-web-interface
-RUN sed -i -e 's#graylog2-server.uris=#graylog2-server.uris="http://127.0.0.1:12900/"#' /opt/graylog2-web-interface/conf/graylog2-web-interface.conf
 RUN sed -i -e "s/application.secret=\"\"/application.secret=\"$(pwgen -s 96)\"/" /opt/graylog2-web-interface/conf/graylog2-web-interface.conf
+ADD etc/supervisord.d/graylog2-web-interface.ini /etc/supervisord.d/graylog2-web-interface.ini
+
+
+
+ADD root/bin/setup.sh /root/bin/setup.sh
+ADD etc/supervisord.d/setup.ini /etc/supervisord.d/setup.ini
 
 
 
@@ -58,3 +64,9 @@ RUN sed -i -e "s/application.secret=\"\"/application.secret=\"$(pwgen -s 96)\"/"
 #RUN rm /opt/graylog*.tgz
 
 EXPOSE 9000
+
+# Solution for 'ping: icmp open socket: Operation not permitted'
+RUN chmod u+s /usr/bin/ping
+RUN ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
+
+CMD /bin/supervisord -c /etc/supervisord.conf
