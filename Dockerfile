@@ -3,8 +3,12 @@
 # - graylog2-server
 # - graylog2-web-interface
 # - (graylog2-radio)
-FROM qnib/fd20
+FROM qnib/fd20:bull
 MAINTAINER "Christian Kniep <christian@qnib.org>"
+
+ENV http_proxy http://129.184.89.14:80
+ENV https_proxy http://129.184.89.14:80
+ENV ftp_proxy http://129.184.89.14:80
 
 # some stuff we need
 RUN yum install -y wget openssh-server
@@ -52,13 +56,6 @@ RUN tar xf graylog2-web-interface-0.20.2-snapshot.tgz
 RUN ln -s graylog2-web-interface-0.20.2-snapshot graylog2-web-interface
 RUN sed -i -e "s/application.secret=\"\"/application.secret=\"$(pwgen -s 96)\"/" /opt/graylog2-web-interface/conf/graylog2-web-interface.conf
 ADD etc/supervisord.d/graylog2-web-interface.ini /etc/supervisord.d/graylog2-web-interface.ini
-
-
-
-ADD root/bin/setup.sh /root/bin/setup.sh
-ADD etc/supervisord.d/setup.ini /etc/supervisord.d/setup.ini
-
-
 
 # tidy up a bit
 #RUN rm /opt/graylog*.tgz
