@@ -20,5 +20,7 @@ docker run -ti --rm ${OPTS} ${DEV_MOUNTS} -h graylog2 --name graylog2 -p 9000:90
 docker run -d ${OPTS} ${DEV_MOUNTS} -h graylog2 --name graylog2 -p 9000:9000 -p 12900:12900 qnib/graylog
 ```
 
+Afterwards GRAYLOG2 can be accessed on port 9000 http://<docker_host>:9000.
+
 Since I am not quite sure how to delay the start of supervisord programms graylog2-server and -web-interface will fail once or twice until the other components are up'n'running,
 but who cares... :)
