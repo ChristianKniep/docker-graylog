@@ -6,8 +6,8 @@ Docker image running graylog2
 To spawn a container one might use:
 ```
 # To get all the /dev/* devices needed for sshd and alike:
-export DEV_MOUNTS="-v /dev/null:/dev/null -v /dev/urandom:/dev/urandom -v /dev/random:/dev/random"
-export DEV_MOUNTS="${DEV_MOUNTS} -v /dev/full:/dev/full -v /dev/zero:/dev/zero"
+export DEV_MOUNTS="-v /dev/urandom:/dev/urandom -v /dev/random:/dev/random"
+export DEV_MOUNTS="${DEV_MOUNTS} -v /dev/null:/dev/null -v /dev/zero:/dev/zero"
 # To let syslog-ng access /proc/kmsg
 OPTS="--privileged"
 # If an qnib/elk instance is running, syslog would be forwarded
@@ -16,7 +16,7 @@ OPTS="${OPTS} --link elk:elk"
 OPTS="${OPTS} --link carbon:carbon"
 # Interactive
 docker run -ti --rm ${OPTS} ${DEV_MOUNTS} -h graylog2 --name graylog2 -p 9000:9000 -p 12900:12900 qnib/graylog /bin/bash
-bash-4.2# /root/bin/supervisor_daemonize.sh
+bash-4.2# /usr/local/bin/supervisor_daemonize.sh
 # supervisorctl status
 diamond                          RUNNING   pid 17, uptime 0:00:04
 elasticsearch                    RUNNING   pid 15, uptime 0:00:04
